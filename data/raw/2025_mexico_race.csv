@@ -1,0 +1,21 @@
+DriverNumber,BroadcastName,Abbreviation,DriverId,TeamName,TeamColor,TeamId,FirstName,LastName,FullName,HeadshotUrl,CountryCode,Position,ClassifiedPosition,GridPosition,Q1,Q2,Q3,Time,Status,Points,Laps
+4,,NOR,norris,McLaren,,mclaren,Lando,Norris,Lando Norris,,,1.0,1,1.0,,,,0 days 01:37:58.574000,Finished,25.0,71.0
+16,,LEC,leclerc,Ferrari,,ferrari,Charles,Leclerc,Charles Leclerc,,,2.0,2,2.0,,,,0 days 00:00:30.324000,Finished,18.0,71.0
+1,,VER,max_verstappen,Red Bull,,red_bull,Max,Verstappen,Max Verstappen,,,3.0,3,5.0,,,,0 days 00:00:31.049000,Finished,15.0,71.0
+87,,BEA,bearman,Haas F1 Team,,haas,Oliver,Bearman,Oliver Bearman,,,4.0,4,9.0,,,,0 days 00:00:40.955000,Finished,12.0,71.0
+81,,PIA,piastri,McLaren,,mclaren,Oscar,Piastri,Oscar Piastri,,,5.0,5,7.0,,,,0 days 00:00:42.065000,Finished,10.0,71.0
+12,,ANT,antonelli,Mercedes,,mercedes,Andrea Kimi,Antonelli,Andrea Kimi Antonelli,,,6.0,6,6.0,,,,0 days 00:00:47.837000,Finished,8.0,71.0
+63,,RUS,russell,Mercedes,,mercedes,George,Russell,George Russell,,,7.0,7,4.0,,,,0 days 00:00:50.287000,Finished,6.0,71.0
+44,,HAM,hamilton,Ferrari,,ferrari,Lewis,Hamilton,Lewis Hamilton,,,8.0,8,3.0,,,,0 days 00:00:56.446000,Finished,4.0,71.0
+31,,OCO,ocon,Haas F1 Team,,haas,Esteban,Ocon,Esteban Ocon,,,9.0,9,11.0,,,,0 days 00:01:15.464000,Finished,2.0,71.0
+5,,BOR,bortoleto,Sauber,,sauber,Gabriel,Bortoleto,Gabriel Bortoleto,,,10.0,10,16.0,,,,0 days 00:01:16.863000,Finished,1.0,71.0
+22,,TSU,tsunoda,Red Bull,,red_bull,Yuki,Tsunoda,Yuki Tsunoda,,,11.0,11,10.0,,,,0 days 00:01:19.048000,Finished,0.0,71.0
+23,,ALB,albon,Williams,,williams,Alexander,Albon,Alexander Albon,,,12.0,12,17.0,,,,0 days 00:00:02.450000,Lapped,0.0,70.0
+6,,HAD,hadjar,RB F1 Team,,rb,Isack,Hadjar,Isack Hadjar,,,13.0,13,8.0,,,,0 days 00:00:06.656000,Lapped,0.0,70.0
+18,,STR,stroll,Aston Martin,,aston_martin,Lance,Stroll,Lance Stroll,,,14.0,14,19.0,,,,0 days 00:00:07.035000,Lapped,0.0,70.0
+10,,GAS,gasly,Alpine F1 Team,,alpine,Pierre,Gasly,Pierre Gasly,,,15.0,15,18.0,,,,0 days 00:00:44.080000,Lapped,0.0,70.0
+43,,COL,colapinto,Alpine F1 Team,,alpine,Franco,Colapinto,Franco Colapinto,,,16.0,16,20.0,,,,0 days 00:00:44.376000,Lapped,0.0,70.0
+55,,SAI,sainz,Williams,,williams,Carlos,Sainz,Carlos Sainz,,,17.0,17,12.0,,,,,Retired,0.0,67.0
+14,,ALO,alonso,Aston Martin,,aston_martin,Fernando,Alonso,Fernando Alonso,,,18.0,R,14.0,,,,,Retired,0.0,34.0
+27,,HUL,hulkenberg,Sauber,,sauber,Nico,Hülkenberg,Nico Hülkenberg,,,19.0,R,13.0,,,,,Retired,0.0,25.0
+30,,LAW,lawson,RB F1 Team,,rb,Liam,Lawson,Liam Lawson,,,20.0,R,15.0,,,,,Retired,0.0,5.0
