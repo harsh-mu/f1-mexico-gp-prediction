@@ -16,3 +16,6 @@ cache/
 
 # VS Code local settings
 .vscode/
+
+# Generated processed datasets
+data/processed/
