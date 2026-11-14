@@ -79,18 +79,20 @@ def main():
 
     save_data(featured_df)
 
-    print("Final dataset shape:", featured_df.shape)
-    print(featured_df[
+    print(featured_df.loc[
+        featured_df["DriverId"] == "max_verstappen",
         [
             "Year",
             "RoundNumber",
-            "DriverId",
-            "qualifying_gap_pct",
-            "driver_avg_finish_5",
-            "driver_avg_qualifying_5",
-            "driver_finish_std_5"
+            "Status_race",
+            "is_dnf",
+            "driver_dnf_rate_10"
         ]
-    ].head(10))
+    ].head(15))
+
+
+
+
 
 
 if __name__ == "__main__":

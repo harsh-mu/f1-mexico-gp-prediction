@@ -1,4 +1,4 @@
-
+import numpy as np
 import pandas as pd
 
 
@@ -53,6 +53,34 @@ def finishing_consistency(df):
     return df
 
 
+def dnf_rate(df):
+    df = df.copy()
+
+    status = df["Status_race"]
+
+    finished = (
+        status.isin(["Finished", "Lapped"])
+        | status.str.match(r"^\+\d+ Laps?$", na=False)
+    )
+
+    exceptions = (
+        status.isin(["Did not start", "Withdrew", "Disqualified"])
+    )
+
+    did_not_finish = status.notna() & ~(finished | exceptions)
+
+    df["is_dnf"] = np.select(
+        condlist=[finished, exceptions, did_not_finish], 
+        choicelist=[0, np.nan, 1],
+        default=np.nan
+    )
+
+    df["driver_dnf_rate_10"] = (
+        df.groupby("DriverId")["is_dnf"].transform(lambda x: x.shift(1).rolling(window=10, min_periods=1).mean())
+    )
+
+    return df
+
 def validate_chronological_order(df):
     """Ensure records are chronologically sorted."""
 
@@ -83,5 +111,6 @@ def engineer_driver_features(df):
     df = average_finish(df)
     df = average_qualifying(df)
     df = finishing_consistency(df)
+    df = dnf_rate(df)
 
     return df
