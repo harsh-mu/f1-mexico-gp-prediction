@@ -1,5 +1,4 @@
 from pathlib import Path
-from datetime import datetime
 import os
 import time
 
@@ -16,6 +15,8 @@ CACHE_DIR = Path("cache")
 QUALIFYING_FILE = DATA_DIR / "historical_qualifying.csv"
 RACE_FILE = DATA_DIR / "historical_races.csv"
 FAILED_FILE = DATA_DIR / "failed_rounds.csv"
+
+EVENT_COLUMNS = ["EventName", "Location", "Country"]
 
 MAX_RETRIES = 3
 
@@ -75,6 +76,7 @@ def retry_request(function, *args):
 
             time.sleep(5 * attempt)
 
+
 def load_existing_data(path):
     """
     Load previously collected results if they exist.
@@ -121,6 +123,54 @@ def get_completed_rounds(qualifying_df, race_df):
     return qualifying_rounds & race_rounds
 
 
+def add_event_metadata(results, event):
+    """
+    Attach event information to newly collected session results.
+    """
+
+    results = results.copy()
+
+    for col in EVENT_COLUMNS:
+        results[col] = event[col]
+
+    return results
+
+
+def backfill_event_metadata(df, year, schedule):
+    """
+    Add or update event metadata for previously collected races,
+    without downloading their qualifying or race sessions again.
+    """
+
+    if df.empty:
+        return df
+
+    df = df.copy()
+
+    # Ensure metadata columns exist
+    for col in EVENT_COLUMNS:
+        if col not in df.columns:
+            df[col] = pd.NA
+
+    # Match existing rows to events using the round number
+    schedule_by_round = schedule.set_index("RoundNumber")
+
+    year_mask = df["Year"].eq(year)
+
+    for col in EVENT_COLUMNS:
+        values = df.loc[year_mask, "RoundNumber"].map(
+            schedule_by_round[col]
+        )
+
+        # Use schedule metadata when available;
+        # otherwise preserve any existing metadata
+        df.loc[year_mask, col] = values.combine_first(
+            df.loc[year_mask, col]
+        )
+
+    return df
+
+
 def main():
 
     qualifying_df = load_existing_data(QUALIFYING_FILE)
@@ -156,7 +206,29 @@ def main():
         schedule = schedule[
             (schedule["RoundNumber"] > 0)
             & (event_dates < CUTOFF_DATE)
-        ]
+        ].copy()
+
+        # Validate one event per round
+        if schedule["RoundNumber"].duplicated().any():
+            raise ValueError(
+                f"Duplicate event rounds found in {year} schedule."
+            )
+
+        # Backfill metadata for already collected races
+        qualifying_df = backfill_event_metadata(
+            qualifying_df, year, schedule
+        )
+
+        race_df = backfill_event_metadata(
+            race_df, year, schedule
+        )
+
+        # Save enriched historical records
+        if not qualifying_df.empty:
+            save_checkpoint(qualifying_df, QUALIFYING_FILE)
+
+        if not race_df.empty:
+            save_checkpoint(race_df, RACE_FILE)
 
         for round_number in schedule["RoundNumber"]:
 
@@ -176,6 +248,19 @@ def main():
                     collect_race, year, round_number
                 )
 
+                # Attach event metadata to new results
+                event = schedule.loc[
+                    schedule["RoundNumber"] == round_number
+                ].iloc[0]
+
+                qualifying_results = add_event_metadata(
+                    qualifying_results, event
+                )
+
+                race_results = add_event_metadata(
+                    race_results, event
+                )
+
                 # Validate that driver identifiers are present
                 if (
                     qualifying_results["DriverId"].isna().all()
@@ -184,7 +269,7 @@ def main():
                     raise ValueError("Missing driver identifiers")
 
                 # Remove any incomplete prior checkpoint rows
-                # for this race before inserting the new results.
+                # for this race before inserting the new results
                 for df_name in ("qualifying_df", "race_df"):
                     df = locals()[df_name]
 

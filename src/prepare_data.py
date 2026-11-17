@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 import pandas as pd
@@ -23,16 +22,30 @@ def load_data():
 
 
 def merge_data(qualifying_df, race_df):
-    """Merge corresponding qualifying and race records."""
+    """Merge qualifying and race records, validating event metadata."""
 
     combined_df = pd.merge(
-        qualifying_df,
-        race_df,
+        left=qualifying_df,
+        right=race_df,
         on=MERGE_KEYS,
         how="inner",
         suffixes=("_quali", "_race"),
         validate="one_to_one"
     )
+
+    # Validate and consolidate event metadata
+    for col in ["EventName", "Location", "Country"]:
+        quali_col = f"{col}_quali"
+        race_col = f"{col}_race"
+
+        if not combined_df[quali_col].equals(combined_df[race_col]):
+            raise ValueError(f"Mismatched event metadata: {col}")
+
+        combined_df[col] = combined_df[quali_col]
+
+        combined_df = combined_df.drop(
+            columns=[quali_col, race_col]
+        )
 
     return combined_df
 
@@ -79,20 +92,19 @@ def main():
 
     save_data(featured_df)
 
-    print(featured_df.loc[
-        featured_df["DriverId"] == "max_verstappen",
-        [
-            "Year",
-            "RoundNumber",
-            "Status_race",
-            "is_dnf",
-            "driver_dnf_rate_10"
-        ]
-    ].head(15))
 
-
-
-
+    print(
+        featured_df.loc[
+            (featured_df["DriverId"] == "max_verstappen")
+            & (featured_df["Location"] == "Mexico City"),
+            [
+                "Year",
+                "RoundNumber",
+                "Position_race",
+                "driver_circuit_avg_finish"
+            ]
+        ].to_string(index=False)
+    )
 
 
 if __name__ == "__main__":

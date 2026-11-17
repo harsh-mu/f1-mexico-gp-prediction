@@ -76,10 +76,55 @@ def dnf_rate(df):
     )
 
     df["driver_dnf_rate_10"] = (
-        df.groupby("DriverId")["is_dnf"].transform(lambda x: x.shift(1).rolling(window=10, min_periods=1).mean())
+        df.groupby("DriverId")["is_dnf"].transform(
+            lambda x: (
+                x.dropna()
+                .rolling(window=10, min_periods=1)
+                .mean()
+                .reindex(x.index)
+                .shift(1)
+                .ffill()
+            )
+        )
     )
 
     return df
+
+
+def average_position_change(df):
+    df = df.copy()
+
+    df["position_delta"] = df["GridPosition_race"] - df["Position_race"]
+
+    valid_race = (
+        (df["is_dnf"] == 0)
+        & (df["GridPosition_race"] > 0)
+        & df["Position_race"].notna()
+    )
+
+    df.loc[~valid_race, "position_delta"] = np.nan
+
+    df["average_position_change_last_5"] = (
+        df.groupby("DriverId")["position_delta"]
+        .transform(rolling_valid_position_change)
+    )
+
+    return df
+
+
+def rolling_valid_position_change(x):
+    valid = x.dropna()
+
+    rolling_avg = (
+        valid.rolling(window=5, min_periods=1)
+        .mean()
+        .reindex(x.index)
+        .ffill()
+        .shift(1)
+    )
+
+    return rolling_avg
+
 
 def validate_chronological_order(df):
     """Ensure records are chronologically sorted."""
@@ -112,5 +157,6 @@ def engineer_driver_features(df):
     df = average_qualifying(df)
     df = finishing_consistency(df)
     df = dnf_rate(df)
+    df = average_position_change(df)
 
     return df
